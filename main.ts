@@ -17,7 +17,13 @@ const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 const source = join(BOT_DIR, 'POST.json');
 
 // POST.json must name one X post: {"url": "https://x.com/<handle>/status/<id>"}
-const raw = readFileSync(source, 'utf8');
+let raw: string;
+try {
+  raw = readFileSync(source, 'utf8');
+} catch {
+  console.error(`POST.json could not be read from ${BOT_DIR}`);
+  process.exit(1);
+}
 const parsed: unknown = JSON.parse(raw);
 if (typeof parsed !== 'object' || parsed === null || !('url' in parsed)) {
   console.error('POST.json must be a JSON object with a "url" field');
